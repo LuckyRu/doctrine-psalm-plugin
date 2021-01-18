@@ -30,13 +30,21 @@ class Plugin implements PluginEntryPointInterface
     /** @return string[] */
     private function getStubFiles(): array
     {
+        $basePath = __DIR__ . '/../stubs';
+        if (
+            $this->hasPackage('doctrine/persistence')
+            && $this->hasPackageOfVersion('doctrine/persistence', '>= 1.3.0')
+        ) {
+            $basePath = __DIR__ . '/../stubs/persistence-1.3+';
+        }
+
         $files = array_merge(
-            glob(__DIR__ . '/../stubs/*.phpstub') ?: [],
-            glob(__DIR__ . '/../stubs/DBAL/*.phpstub') ?: []
+            glob($basePath . '/*.phpstub') ?: [],
+            glob($basePath . '/DBAL/*.phpstub') ?: []
         );
 
         if ($this->hasPackageOfVersion('doctrine/collections', '>= 1.6.0')) {
-            unset($files[array_search(__DIR__ . '/../stubs/ArrayCollection.phpstub', $files, true)]);
+            unset($files[array_search($basePath . '/ArrayCollection.phpstub', $files, true)]);
         }
 
         return $files;
